@@ -2,7 +2,6 @@ const User = require("./users.model");
 const bcrypt = require("bcrypt");
 
 
-
 // Get all users
 const getUsers = async (req, res) => {
   try {
@@ -20,9 +19,11 @@ const getUserById = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
+
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
+
     res.status(200).json(user);
   } catch (error) {
     console.error("Error getting user:", error);
@@ -36,16 +37,19 @@ const updateUserById = async (req, res) => {
     const userId = req.params.id;
     const { email, password } = req.body;
 
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    // Prepare update fields
+    const updateFields = {};
+    if (email) updateFields.email = email;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 12);
+      updateFields.password = hashedPassword;
+    }
 
-    // Update the user with the hashed password
+    // Update the user
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { ...req.body, password: hashedPassword },
-      {
-        new: true,
-      }
+      updateFields,
+      { new: true }
     );
 
     if (!updatedUser) {
@@ -90,4 +94,4 @@ module.exports = {
     getUserById,
     updateUserById,
     deleteUserById
-}
+};

@@ -5,7 +5,7 @@ const {
   updateUserById,
   deleteUserById,
 } = require("./users.controller");
-const verifyToken = require("../middleware/verifyToken");
+const authRequired = require("../middleware/authRequired");
 
 const userRouter = router();
 

@@ -9,8 +9,8 @@ dotenv.config();
 const secretKey = process.env.JWT_SECRET_KEY;
 const jwtExpiration = "1h";
 
-const generateToken = (user) => {
-  const token = jwt.sign({ id: user._id, email: user.email }, secretKey, {
+function generateToken (userId) {
+  const token = jwt.sign({ userId }, secretKey, {
     expiresIn: jwtExpiration,
   });
   return token;
@@ -30,8 +30,8 @@ const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
     const user = await User.create({ ...req.body, password: hashedPassword });
 
-    // Generate token
-    const token = generateToken(user);
+    // Generate token using generateAuthToken
+    const token = generateToken(user._id); 
 
     res.status(201).json({ token });
   } catch (error) {
@@ -56,8 +56,8 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    // Generate token
-    const token = generateToken(user);
+    // Generate token using generateAuthToken
+    const token = generateToken(user._id);
 
     res.status(200).json({ token });
   } catch (error) {
@@ -65,5 +65,6 @@ const loginUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 
 module.exports = { registerUser, loginUser };

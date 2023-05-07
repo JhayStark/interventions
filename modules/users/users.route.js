@@ -1,17 +1,15 @@
-const router = require("express").Router;
+const router = require("express").Router();
 const {
   getUsers,
   getUserById,
   updateUserById,
   deleteUserById,
 } = require("./users.controller");
-const authRequired = require("../middleware/authRequired");
+const { authRequired } = require("../middleware/authRequired");
 
-const userRouter = router();
+router.get("/", authRequired, getUsers);
+router.get("/:id", authRequired, getUserById);
+router.put("/:id", authRequired, updateUserById);
+router.delete("/:id", authRequired, deleteUserById);
 
-userRouter.get("/", getUsers);
-userRouter.get("/:id", getUserById);
-userRouter.put("/:id", updateUserById);
-userRouter.delete("/:id", deleteUserById);
-
-module.exports = userRouter;
+module.exports = router;
